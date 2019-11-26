@@ -1,4 +1,4 @@
-# 爬取豆瓣活动/新书两个tab页内容 https://market.douban.com/book/?type=activity&page=1&page_num=10
+# 爬取豆瓣活动/新书两个tab页内容 https://market.douban.com/book/?type=activity
 # 同时把数据存储到本地mysql的egg_db数据库中，表结构如下
 # DROP TABLE IF EXISTS `douban_activity`;
 # CREATE TABLE `douban_activity` (
@@ -53,9 +53,28 @@ def handle_db_connect():
 
 # 存储数据到sql
 def handle_save_data(activityData, conn):
+  saveData = format_save_data(activityData)
+  try:
+    with conn.cursor() as cursor:
+      sql="insert into douban_activity(title,share_title,share_content,share_pics_rectangle,partake_counts) values(%s,%s,%s,%s,%s)"
+      cursor.executemany(sql, saveData)
+      conn.commit()
+  except Exception:
+      print(Exception.message)
+      conn.rollback()
+  finally:
+      conn.close()
 
 
+# 处理保存的数据(PS:在数组中添加元组，然后将该数组转化为二级元组)
+def format_save_data(activityData):
+  tupList = []
+  for item in activityData:
+    values = [ item['title'], item['share_title'], item['share_content'], item['share_pics_rectangle'], item['partake_counts']]
+    tupList.append(tuple(values))
+  return tuple(tupList)
 
+# 主函数
 def main():
   activityData = get_xhr_data()
   conn = handle_db_connect()
