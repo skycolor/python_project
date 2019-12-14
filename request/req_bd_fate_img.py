@@ -66,9 +66,9 @@ def down_load_img(imgObjArr):
         if 'middleURL' in imgObj:
             bin = requests.get(imgObj['middleURL'], headers=Img_headers).content
             # mac
-            # with open('/Users/hf/sky/pic/%s.jpg' % img_count, 'wb') as file:
+            with open('/Users/hf/sky/pic/%s.jpg' % img_count, 'wb') as file:
             # windows
-            with open('F:/pic/%s.jpg' % img_count, 'wb') as file:
+            # with open('F:/pic/%s.jpg' % img_count, 'wb') as file:
                 file.write(bin)
                 img_count += 1
                 print(img_count)
